@@ -1,0 +1,17 @@
+.priorityTemplate {
+    width: 100px;
+}
+
+.statusTemplate {
+    width: 200px;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.dropdown-status {
+    min-width: 190px;
+    
+}
