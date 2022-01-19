@@ -28,7 +28,11 @@ function TodoForm() {
       createdAt: moment().format("HH:mm:ss DD/MM/YYYY"),
       priority: e.priorityValue,
     };
+    const todoDatas = JSON.parse(localStorage.getItem('todolist-tit')) || [];
+    const _todoDatas = _.concat(todoDatas, newTask);
+    localStorage.setItem('todolist-tit', JSON.stringify(_todoDatas));
     console.log(newTask);
+    console.log(todoDatas);
   };
 
   return (

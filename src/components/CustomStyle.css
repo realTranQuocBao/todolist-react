@@ -4,6 +4,7 @@
 
 .statusTemplate {
     width: 200px;
+    /* width: fit-content; */
 }
 
 .table-header {
@@ -14,4 +15,8 @@
 .dropdown-status {
     min-width: 190px;
     
+}
+
+.button-space {
+    margin-right: 5px;
 }
