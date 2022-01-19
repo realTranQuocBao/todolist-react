@@ -1,25 +1,26 @@
 import { CForm, CButton, CFormInput, CFormSelect } from "@coreui/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useForm } from "react-hook-form";
 import moment from "moment";
 import styled from "styled-components";
 import _ from "lodash";
 import { Card } from "primereact/card";
 
-function TodoForm() {
-  //   const [taskInput, setTaskInput] = useState("");
+function TodoForm({props: {todoDatas, setTodoDatas}}) {
+    const [taskInput, setTaskInput] = useState("");
   const {
     register,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
   const Note = styled.p`
     color: red;
+    margin: 3px auto;
   `;
   console.log("Re-render: TodoForm");
   const onSubmit = (e) => {
-    console.log(e);
     const newTask = {
       id: Date.now(),
       title: e.taskInput,
@@ -28,17 +29,19 @@ function TodoForm() {
       createdAt: moment().format("HH:mm:ss DD/MM/YYYY"),
       priority: e.priorityValue,
     };
-    const todoDatas = JSON.parse(localStorage.getItem('todolist-tit')) || [];
+    setValue('taskInput', '');
+    setValue('priorityValue', '');
+
+    // const todoDatas = JSON.parse(localStorage.getItem('todolist-tit')) || [];
     const _todoDatas = _.concat(todoDatas, newTask);
+    setTodoDatas(_todoDatas);
     localStorage.setItem('todolist-tit', JSON.stringify(_todoDatas));
-    console.log(newTask);
-    console.log(todoDatas);
   };
 
   return (
     <div className="d-flex justify-content-center">
-      <CForm onSubmit={handleSubmit(onSubmit)} style={{ "width": 500, "maxWidth":500 }}>
-        <div className="m-3">
+      <CForm onSubmit={handleSubmit(onSubmit)} className="todoFormSubmit d-flex align-content-between flex-column">
+        <div className="m-1 todoForm">
           <CFormInput
             {...register("taskInput", {
               required: "Please enter a task to do.",
@@ -49,7 +52,7 @@ function TodoForm() {
           <Note>{errors.taskInput?.message}</Note>
         </div>
 
-        <div className="m-3">
+        <div className="m-1 todoForm">
           <CFormSelect
             {...register("priorityValue", {
               required: "Please choose priority.",
@@ -63,7 +66,7 @@ function TodoForm() {
           <Note>{errors.priorityValue?.message}</Note>
         </div>
 
-        <CButton type="submit" className="mb-3">
+        <CButton type="submit" className="m-1">
           Add task
         </CButton>
       </CForm>

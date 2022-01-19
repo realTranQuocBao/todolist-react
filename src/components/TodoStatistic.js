@@ -1,7 +1,8 @@
 
 
 
-function TodoStatistic() {
+function TodoStatistic({props}) {
+    console.log("Cí lùm mía, TodoStatistic:", props);
     return (
         <div>
             TodoStatistic

@@ -2,9 +2,13 @@
     width: 100px;
 }
 
-.statusTemplate {
-    width: 200px;
+.priorityTemplate, .statusTemplate, .lastEditedTemplate {
+    width: 145px;
     /* width: fit-content; */
+}
+
+.statusTemplateColumn, .lastEditedTemplateColumn, .priorityTemplateColumn {
+    width: 150px;
 }
 
 .table-header {
@@ -19,4 +23,13 @@
 
 .button-space {
     margin-right: 5px;
+}
+
+.todoForm {
+    min-height: 70px;
+}
+
+.todoFormSubmit {
+    width: 500px;
+    max-width: 500px;
 }
