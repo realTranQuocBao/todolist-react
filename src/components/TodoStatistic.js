@@ -4,13 +4,11 @@ function TodoStatistic({ props }) {
   const { todoDatas } = props;
   const processing = todoDatas.filter((data) => {
     return data.completedAt === null;
-  }).length
+  }).length;
 
   const done = todoDatas.filter((data) => {
     return data.completedAt !== null;
-  }).length
-  console.log(
-  );
+  }).length;
 
   const chartData = {
     labels: ["Done", "Processing"],

@@ -18,6 +18,12 @@ Những lib mọi người có thể tham khảo qua, nếu thấy xài được
 - moment: xử lí về thời gian
 - styled components: custom ui
 
+# Demo
+
+![Header](https://github.com/realTranQuocBao/todolist-react/raw/main/public/demo/demo1.png)
+![Body](https://github.com/realTranQuocBao/todolist-react/raw/main/public/demo/demo2.png)
+![For mobile](https://github.com/realTranQuocBao/todolist-react/raw/main/public/demo/demo3.png)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
