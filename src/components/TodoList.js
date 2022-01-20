@@ -4,10 +4,11 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { FilterMatchMode, FilterService } from "primereact/api";
-import { useContext, useEffect, useState } from "react";
-import _, { set } from "lodash";
+import { useEffect, useState } from "react";
+import _ from "lodash";
 import moment from "moment";
 import { Badge } from "primereact/badge";
+import TaskEditDialog from "./TaskEditDialog";
 
 // const priorityValues = [
 //     {
@@ -24,12 +25,20 @@ import { Badge } from "primereact/badge";
 //     }
 // ]
 
-function TodoList({props: {todoDatas, setTodoDatas}}) {
-
+function TodoList({ props: { todoDatas, setTodoDatas } }) {
   const statusFilters = [
     { value: 0, text: "All status" },
     { value: 1, text: "Processing" },
     { value: 2, text: "Done" },
+  ];
+
+  const sortOptions = [
+    { value: 1, option: "Priority - ASC" },
+    { value: 2, option: "Priority - DES" },
+    { value: 3, option: "Time Done - ASC" },
+    { value: 4, option: "Time Done - DES" },
+    { value: 5, option: "Time Edited - ASC" },
+    { value: 6, option: "Time Edited - DES" },
   ];
 
   FilterService.register("statusFilterService", (completedAtTime, value) => {
@@ -60,15 +69,17 @@ function TodoList({props: {todoDatas, setTodoDatas}}) {
     },
   });
 
-  const [loading, setLoading] = useState(false);
   const [tasks, setTasks] = useState(null);
   const [selectedTasks, setSelectedTasks] = useState(null);
   const [statusFilter, setStatusFilter] = useState(null);
   const [keywordSearch, setKeywordSearch] = useState("");
+  const [taskEditDialog, setTaskEditDialog] = useState(false);
+  const [taskItem, setTaskItem] = useState({});
+  const [sortOption, setSortOption] = useState();
 
   useEffect(() => {
     setTasks(todoDatas);
-    console.log("Chơi thì nhào dzô...");
+    // console.log("Chơi thì nhào dzô...");
   }, [todoDatas]);
 
   const handleStatusFilterChange = (e) => {
@@ -81,7 +92,6 @@ function TodoList({props: {todoDatas, setTodoDatas}}) {
 
   const handleSeachSubmit = (event) => {
     event.preventDefault();
-
   };
   const handleKeywordSearchChange = (event) => {
     const value = event.target.value;
@@ -94,34 +104,133 @@ function TodoList({props: {todoDatas, setTodoDatas}}) {
   const handleComplete = (id) => {
     const index = _.findIndex(todoDatas, (data) => {
       return data.id === id;
-    })
-    const newTaskComplete = {...todoDatas[index], completedAt: moment().format("HH:mm:ss DD/MM/YYYY")};
+    });
+    const newTaskComplete = {
+      ...todoDatas[index],
+      completedAt: moment().format("HH:mm:ss DD/MM/YYYY"),
+    };
 
     let _todoDatas = _.clone(todoDatas);
     _todoDatas[index] = newTaskComplete;
     setTodoDatas(_todoDatas);
-    localStorage.setItem('todolist-tit', JSON.stringify(_todoDatas));
+    localStorage.setItem("todolist-tit", JSON.stringify(_todoDatas));
   };
 
   const handleUncomplete = (id) => {
     const index = _.findIndex(todoDatas, (data) => {
       return data.id === id;
-    })
-    const newTaskComplete = {...todoDatas[index], completedAt: null};
+    });
+    const newTaskComplete = { ...todoDatas[index], completedAt: null };
 
     let _todoDatas = _.clone(todoDatas);
     _todoDatas[index] = newTaskComplete;
     setTodoDatas(_todoDatas);
-    localStorage.setItem('todolist-tit', JSON.stringify(_todoDatas));
+    localStorage.setItem("todolist-tit", JSON.stringify(_todoDatas));
+  };
+
+  const handleEdit = (id) => {
+    setTaskEditDialog(true);
+    const index = _.findIndex(todoDatas, (data) => {
+      return data.id === id;
+    });
+    setTaskItem(todoDatas[index]);
+  };
+
+  const hideEditDialog = () => {
+    setTaskEditDialog(false);
+  };
+
+  const saveTask = (newTaskItem) => {
+    const index = _.findIndex(todoDatas, (data) => {
+      return data.id === taskItem.id;
+    });
+    let _todoDatas = _.clone(todoDatas);
+    _todoDatas[index] = newTaskItem;
+    setTodoDatas(_todoDatas);
+    localStorage.setItem("todolist-tit", JSON.stringify(_todoDatas));
+    setTaskEditDialog(false);
   };
 
   const handleDelete = (id) => {
     const _todoDatas = _.remove(todoDatas, (data) => {
       return data.id !== id;
-    })
-    
+    });
+
     setTodoDatas(_todoDatas);
-    localStorage.setItem('todolist-tit', JSON.stringify(_todoDatas));
+    localStorage.setItem("todolist-tit", JSON.stringify(_todoDatas));
+  };
+
+  const handleSortOptionChange = (e) => {
+    const optionSort = e.value;
+    setSortOption(optionSort);
+    let _tasks = _.clone(tasks);
+    switch (optionSort) {
+      case 1: {
+        _tasks.sort((task1, task2) => {
+          return task1.priority - task2.priority;
+        });
+        break;
+      }
+      case 2: {
+        _tasks.sort((task1, task2) => {
+          return task2.priority - task1.priority;
+        });
+        break;
+      }
+      case 3: {
+        _tasks.sort((task1, task2) => {
+          return (
+            moment(
+              task1.completedAt || "00:00:00 1/1/1970",
+              "HH:mm:ss DD/MM/YYYY"
+            ) -
+            moment(
+              task2.completedAt || "00:00:00 1/1/1970",
+              "HH:mm:ss DD/MM/YYYY"
+            )
+          );
+        });
+        break;
+      }
+      case 4: {
+        _tasks.sort((task1, task2) => {
+          return (
+            moment(
+              task2.completedAt || "00:00:00 1/1/1970",
+              "HH:mm:ss DD/MM/YYYY"
+            ) -
+            moment(
+              task1.completedAt || "00:00:00 1/1/1970",
+              "HH:mm:ss DD/MM/YYYY"
+            )
+          );
+        });
+        break;
+      }
+      case 5: {
+        _tasks.sort((task1, task2) => {
+          return (
+            moment(task1.editedAt || task1.createdAt, "HH:mm:ss DD/MM/YYYY") -
+            moment(task2.editedAt || task2.createdAt, "HH:mm:ss DD/MM/YYYY")
+          );
+        });
+        break;
+      }
+      case 6: {
+        _tasks.sort((task1, task2) => {
+          return (
+            moment(task2.editedAt || task2.createdAt, "HH:mm:ss DD/MM/YYYY") -
+            moment(task1.editedAt || task1.createdAt, "HH:mm:ss DD/MM/YYYY")
+          );
+        });
+        break;
+      }
+      default: {
+        console.log("ERROR");
+      }
+    }
+
+    setTasks(_tasks);
   };
 
   const header = (
@@ -134,6 +243,16 @@ function TodoList({props: {todoDatas, setTodoDatas}}) {
           onChange={handleStatusFilterChange}
           optionLabel="text"
           placeholder="Select a Status"
+          className="dropdown-status"
+        />
+      </div>
+      <div>
+        <Dropdown
+          value={sortOption}
+          options={sortOptions}
+          onChange={handleSortOptionChange}
+          optionLabel="option"
+          placeholder="Sort by..."
           className="dropdown-status"
         />
       </div>
@@ -191,9 +310,6 @@ function TodoList({props: {todoDatas, setTodoDatas}}) {
       );
     }
   };
-  const statusFilterTemplate = () => {
-    return <span className="p-badge-success">Okla</span>;
-  };
   const actionBodyTemplate = (rowData) => {
     return (
       <>
@@ -201,30 +317,39 @@ function TodoList({props: {todoDatas, setTodoDatas}}) {
           <Button
             title="Complete"
             icon="pi pi-check"
-            className="p-button-rounded p-button-default button-space"
-            onClick={() => {handleComplete(rowData.id);}}
+            className="p-button-rounded p-button-success button-space p-button-sm"
+            onClick={() => {
+              handleComplete(rowData.id);
+            }}
           />
         )}
         {rowData.completedAt !== null && (
           <Button
             title="Uncomplete"
             icon="pi pi-times"
-            className="p-button-rounded p-button-default button-space"
-            onClick={() => {handleUncomplete(rowData.id);}}
+            className="p-button-rounded p-button-warning button-space p-button-sm"
+            onClick={() => {
+              handleUncomplete(rowData.id);
+            }}
           />
         )}
 
         <Button
           title="Edit"
           icon="pi pi-pencil"
-          className="p-button-rounded p-button-default button-space"
-          onClick={() => {}}
+          className="p-button-rounded p-button-info button-space p-button-sm"
+          disabled={!(rowData.completedAt === null)}
+          onClick={() => {
+            handleEdit(rowData.id);
+          }}
         />
         <Button
           title="Delete"
           icon="pi pi-trash"
-          className="p-button-rounded p-button-default button-space"
-          onClick={() => {handleDelete(rowData.id);}}
+          className="p-button-rounded p-button-danger button-space p-button-sm"
+          onClick={() => {
+            handleDelete(rowData.id);
+          }}
         />
       </>
     );
@@ -258,20 +383,23 @@ function TodoList({props: {todoDatas, setTodoDatas}}) {
           />
         );
       }
+      default: {
+        console.log("ERROR");
+      }
     }
   };
-  console.log("Re-render: TodoList");
+  // console.log("Re-render: TodoList");
 
   return (
     <div className="card m-3">
       <DataTable
         value={tasks}
-        // paginator
+        paginator
         // className="p-datatable-customers"
         header={header}
-        // rows={10}
+        rows={5}
         // paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-        // rowsPerPageOptions={[10, 25, 50]}
+        rowsPerPageOptions={[2, 5, 10, 20, 50]}
         // dataKey="id"
         // rowHover
         selection={selectedTasks}
@@ -288,15 +416,39 @@ function TodoList({props: {todoDatas, setTodoDatas}}) {
           selectionMode="multiple"
           headerStyle={{ width: "3em" }}
         ></Column>
-        <Column field="title" style={{ width: "30rem", textAlign: "justify" }} header="Task"></Column>
-        <Column header="Priority" className="priorityTemplateColumn" body={priorityBodyTemplate}></Column>
-        <Column header="Status" className="statusTemplateColumn" body={statusBodyTemplate}></Column>
-        <Column header="Last Edited" className="lastEditedTemplateColumn" body={lastEditedBodyTemplate}></Column>
+        <Column
+          field="title"
+          style={{ width: "30rem", textAlign: "justify" }}
+          header="Task"
+        ></Column>
+        <Column
+          header="Priority"
+          className="priorityTemplateColumn"
+          body={priorityBodyTemplate}
+        ></Column>
+        <Column
+          header="Status"
+          className="statusTemplateColumn"
+          body={statusBodyTemplate}
+        ></Column>
+        <Column
+          header="Last Edited"
+          className="lastEditedTemplateColumn"
+          body={lastEditedBodyTemplate}
+        ></Column>
         <Column
           body={actionBodyTemplate}
           headerStyle={{ width: "200px" }}
         ></Column>
       </DataTable>
+      {taskEditDialog && (
+        <TaskEditDialog
+          dataEdit={taskItem}
+          visible={taskEditDialog}
+          onClose={hideEditDialog}
+          onSave={saveTask}
+        />
+      )}
     </div>
   );
 }

@@ -23,6 +23,7 @@
 
 .button-space {
     margin-right: 5px;
+    margin-bottom: 5px;
 }
 
 .todoForm {
@@ -32,4 +33,19 @@
 .todoFormSubmit {
     width: 500px;
     max-width: 500px;
+}
+
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+@media screen and (max-width: 600px) {
+    .table-header {
+        flex-direction: column;
+    }
+    .dropdown-status {
+        width: 100%;
+    }
 }

@@ -1,13 +1,10 @@
 import { CForm, CButton, CFormInput, CFormSelect } from "@coreui/react";
-import { useState, useEffect, useContext } from "react";
 import { useForm } from "react-hook-form";
 import moment from "moment";
 import styled from "styled-components";
 import _ from "lodash";
-import { Card } from "primereact/card";
 
 function TodoForm({props: {todoDatas, setTodoDatas}}) {
-    const [taskInput, setTaskInput] = useState("");
   const {
     register,
     setValue,
@@ -19,7 +16,7 @@ function TodoForm({props: {todoDatas, setTodoDatas}}) {
     color: red;
     margin: 3px auto;
   `;
-  console.log("Re-render: TodoForm");
+  // console.log("Re-render: TodoForm");
   const onSubmit = (e) => {
     const newTask = {
       id: Date.now(),
@@ -33,7 +30,7 @@ function TodoForm({props: {todoDatas, setTodoDatas}}) {
     setValue('priorityValue', '');
 
     // const todoDatas = JSON.parse(localStorage.getItem('todolist-tit')) || [];
-    const _todoDatas = _.concat(todoDatas, newTask);
+    const _todoDatas = _.concat(newTask, todoDatas);
     setTodoDatas(_todoDatas);
     localStorage.setItem('todolist-tit', JSON.stringify(_todoDatas));
   };
