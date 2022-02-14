@@ -1,5 +1,5 @@
 # Cập nhật:
-- Demo: [http://todo.quocbaoit.com](todo.quocbaoit.com)
+- Demo: [todo.quocbaoit.com](http://todo.quocbaoit.com)
 - Đã cấu trúc lại dự án theo những gì đọc từ bài góp ý Nhựt
 - Đã thêm các dialog để xác nhận khi sửa, xóa, cũng như các toast message để thông báo kết quả.
 
